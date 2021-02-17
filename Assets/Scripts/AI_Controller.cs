@@ -86,7 +86,7 @@ public class AI_Controller : MonoBehaviour
         prevClosestPickup = null;
     }
 
-    public void Decay()
+    public void Decay(int action)
     {
         prevDistanceFromClosestPickup = distanceFromClosestPickup;
         distanceFromClosestPickup = 999;
@@ -104,14 +104,7 @@ public class AI_Controller : MonoBehaviour
 
         TakeDamage(1);
 
-        bool canScore = true;
-
-        if (prevDistanceFromClosestPickup < distanceFromClosestPickup)
-        {
-            canScore = false;
-        }
-
-        if ((int)distanceFromClosestPickup <= 5 && canScore)
+        if ((int)distanceFromClosestPickup <= 5 && action == 1 && distanceFromClosestPickup < prevDistanceFromClosestPickup)
         {
             scoreSinceLastCheck += 6 - (int)distanceFromClosestPickup;
         }
@@ -129,6 +122,8 @@ public class AI_Controller : MonoBehaviour
             Debug.Log("gained score");
             scoreSinceLastCheck += 50;
             health += maxHealth;
+            distanceFromClosestPickup = 999;
+            prevDistanceFromClosestPickup = 999;
             spawner.DestroyPickup(other.gameObject);
         }
     }

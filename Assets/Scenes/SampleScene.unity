@@ -151,7 +151,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 133520263}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.53}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0.53}
   m_LocalScale: {x: 0.45187, y: 0.45187, z: 0.45187}
   m_Children: []
   m_Father: {fileID: 1510601912}
@@ -686,13 +686,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 1
   rotationMod: 45
-  minDamageRange: 15
-  damageRangeStep: 5
   scoreSinceLastCheck: 0
   score: 0
-  maxHealth: 50
+  maxHealth: 25
   health: 0
-  distanceFromStart: 0
+  distanceFromClosestPickup: 0
+  prevDistanceFromClosestPickup: 0
 --- !u!136 &1510601909
 CapsuleCollider:
   m_ObjectHideFlags: 0

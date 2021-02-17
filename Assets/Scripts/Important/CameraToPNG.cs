@@ -66,7 +66,7 @@ public class CameraToPNG : MonoBehaviour
 
             if (stp.recievedData)
             {
-                ai.Decay();
+                ai.Decay(stp.output[0]);
 
                 //convert the returned data to a set of actions
 
