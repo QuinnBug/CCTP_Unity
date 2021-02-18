@@ -87,7 +87,6 @@ public class Socket_to_py : MonoBehaviour
 
         data = new byte[8];
 
-        //Debug.Log("Recieveing Data");
         int dataSize = stream.Read(data, 0, 8);
 
         recievedData = true;
