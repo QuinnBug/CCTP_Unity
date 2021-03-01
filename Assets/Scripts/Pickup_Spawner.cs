@@ -21,9 +21,24 @@ public class Pickup_Spawner : MonoBehaviour
 
             while (Mathf.Abs(position.x) <= noSpawnRange && Mathf.Abs(position.z) <= noSpawnRange)
             {
-                position = new Vector3(transform.position.x + (int)Random.Range(-spawnRange, spawnRange),
-                                           transform.position.y + 1,
-                                           transform.position.z + (int)Random.Range(-spawnRange, spawnRange));
+                //position = new Vector3(transform.position.x + (int)Random.Range(-spawnRange, spawnRange),
+                //                           transform.position.y + 1,
+                //                           transform.position.z + (int)Random.Range(-spawnRange, spawnRange));
+                int x = Random.Range(0, 3);
+                if (x == 1)
+                {
+                    position = new Vector3(-4, 0, 0);
+
+                }
+                else if (x == 2)
+                {
+                    position = new Vector3(4, 0, 0);
+
+                }
+                else
+                {
+                    position = new Vector3(0, 0, 5);
+                }
             }
 
             GameObject newObj = Instantiate(pickupPrefab, position, Quaternion.identity);

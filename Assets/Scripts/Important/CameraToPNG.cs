@@ -70,22 +70,22 @@ public class CameraToPNG : MonoBehaviour
 
                 //convert the returned data to a set of actions
 
-                if (stp.output[0] == 0)
+                if (stp.output[0] == 3)
                 {
                     ai.currentSpeed = 0;
                     ai.rotationSpeed = 0;
                 }
-                if (stp.output[0] == 1)
+                if (stp.output[0] == 0)
                 {
                     ai.currentSpeed = 1;
                     ai.rotationSpeed = 0;
                 }
-                if (stp.output[0] == 2)
+                if (stp.output[0] == 1)
                 {
                     ai.currentSpeed = 0;
                     ai.rotationSpeed = 1;
                 }
-                if (stp.output[0] == 3)
+                if (stp.output[0] == 2)
                 {
                     ai.currentSpeed = 0;
                     ai.rotationSpeed = -1;
