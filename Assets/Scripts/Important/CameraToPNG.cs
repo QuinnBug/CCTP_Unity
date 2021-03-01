@@ -7,13 +7,9 @@ using UnityEngine.SceneManagement;
 public class CameraToPNG : MonoBehaviour
 {
     private RenderTexture rt;
-    public Camera cam;
-    [Space]
-    public Vector2Int size;
-    [Space]
-    public string filename;
-    Socket_to_py stp = null;
-    Spin cube;
+    private Vector2Int size = new Vector2Int(128,128);
+    private string filename;
+    private Socket_to_py stp = null;
 
     AI_Controller ai;
     Pickup_Spawner pickupSpawner;
@@ -21,14 +17,14 @@ public class CameraToPNG : MonoBehaviour
     bool ready = true;
 
     private int count = 0;
-
-    [SerializeField]
     private float timer = 0;
+
+    public Camera cam;
+    [Space]
     public float updateRate = 1.0f;
 
     private void Start()
     {
-        cube = FindObjectOfType<Spin>();
         ai = FindObjectOfType<AI_Controller>();
         pickupSpawner = FindObjectOfType<Pickup_Spawner>();
         ResetLevel();
