@@ -21,10 +21,17 @@ public class Pickup_Spawner : MonoBehaviour
 
             while (Mathf.Abs(position.x) <= noSpawnRange && Mathf.Abs(position.z) <= noSpawnRange)
             {
+                //true random pick spawning
+
                 //position = new Vector3(transform.position.x + (int)Random.Range(-spawnRange, spawnRange),
                 //                           transform.position.y + 1,
                 //                           transform.position.z + (int)Random.Range(-spawnRange, spawnRange));
+
                 int x = Random.Range(0, 3);
+
+                //training on only front place pickups
+                x = 0;
+
                 if (x == 1)
                 {
                     position = new Vector3(-4, 0, 0);
