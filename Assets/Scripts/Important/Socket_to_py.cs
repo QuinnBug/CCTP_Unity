@@ -85,12 +85,20 @@ public class Socket_to_py : MonoBehaviour
             Debug.Log("Data stream error");
         }
 
-        data = new byte[8];
+        data = new byte[8 * 4];
 
-        int dataSize = stream.Read(data, 0, 8);
+        int dataSize = stream.Read(data, 0, data.Length);
 
         recievedData = true;
         output = data;
+
+        //string debug = "";
+        //for (int i = 0; i < data.Length; i++)
+        //{
+        //    debug += data[i] + " - ";
+        //}
+        //Debug.Log(debug);
+        
 
         if (game_over)
         {

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class CameraToPNG : MonoBehaviour
 {
     private RenderTexture rt;
-    private Vector2Int size = new Vector2Int(128,128);
+    public Vector2Int size = new Vector2Int(128,128);
     private string filename;
     private Socket_to_py stp = null;
 
@@ -19,7 +19,7 @@ public class CameraToPNG : MonoBehaviour
     private int count = 0;
     private float timer = 0;
 
-    public Camera cam;
+    public Camera[] cams;
     [Space]
     public float updateRate = 1.0f;
 
@@ -54,45 +54,29 @@ public class CameraToPNG : MonoBehaviour
 
         if (stp != null && stp.connected)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // use this to print out the output from the server - don't run on pure update, always have an extra requirement like a keypress
-                System.IO.File.WriteAllBytes(Application.dataPath + @"\outputs\" + filename + "_Py_" + count + ".png", stp.output);
-            }
+            //if (Input.GetKeyDown(KeyCode.Space))
+            //{
+            //    // use this to print out the output from the server - don't run on pure update, always have an extra requirement like a keypress
+            //    System.IO.File.WriteAllBytes(Application.dataPath + @"\outputs\" + filename + "_Py_" + count + ".png", stp.output);
+            //}
 
             if (stp.recievedData)
             {
-                ai.Decay(stp.output[0]);
+                ai.Decay();
 
-                //convert the returned data to a set of actions
-
-                if (stp.output[0] == 3)
+                for (int i = 0; i < ai.units.Length; i++)
                 {
-                    ai.currentSpeed = 0;
-                    ai.rotationSpeed = 0;
-                }
-                if (stp.output[0] == 0)
-                {
-                    ai.currentSpeed = 1;
-                    ai.rotationSpeed = 0;
-                }
-                if (stp.output[0] == 1)
-                {
-                    ai.currentSpeed = 0;
-                    ai.rotationSpeed = 1;
-                }
-                if (stp.output[0] == 2)
-                {
-                    ai.currentSpeed = 0;
-                    ai.rotationSpeed = -1;
+                    ai.SetAction(i, stp.output[8 * i]);
                 }
 
                 stp.recievedData = false;
             }
             else
             {
-                ai.currentSpeed = 0;
-                ai.rotationSpeed = 0;
+                for (int i = 0; i < ai.units.Length; i++)
+                {
+                    ai.SetAction(i, -1);
+                }
             }
 
             ai.Act();
@@ -100,8 +84,15 @@ public class CameraToPNG : MonoBehaviour
             if (timer > updateRate)
             {
                 int reward = ai.CheckScore();
-                //Debug.Log("Tick");
-                stp.ExchangeData(GetPNGBytesFromCamera(), reward, ai.dead);
+                List<byte> dataOutput = new List<byte>();
+
+                foreach (Camera camera in cams)
+                {
+                    dataOutput.AddRange(GetPNGBytesFromCamera(camera));
+                }
+
+                stp.ExchangeData(dataOutput.ToArray(), reward, ai.dead);
+
                 count++;
                 timer = 0;
             }
@@ -130,7 +121,7 @@ public class CameraToPNG : MonoBehaviour
         ready = true;
     }
 
-    public byte[] GetPNGBytesFromCamera()
+    public byte[] GetPNGBytesFromCamera(Camera cam)
     {
         rt = new RenderTexture(size.x, size.y, 24);
         cam.targetTexture = rt;
@@ -146,7 +137,7 @@ public class CameraToPNG : MonoBehaviour
         RenderTexture.active = null;
 
         //debug code to out the image to a folder
-        //System.IO.File.WriteAllBytes(Application.dataPath + @"\outputs\ScreenShot_Unity.png", bytes);
+        System.IO.File.WriteAllBytes(Application.dataPath + @"\outputs\ScreenShot_Unity" + cam.transform.parent.name + "_cam.png", bytes);
 
         return bytes;
     }

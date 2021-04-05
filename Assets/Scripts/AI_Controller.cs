@@ -2,17 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Action
+{
+    NULL = -1,
+    SHOOT = 0,
+    STEP = 1,
+    LEFT_TURN = 2,
+    RIGHT_TURN = 3
+}
+
 public class AI_Controller : MonoBehaviour
 {
-    internal float rotationSpeed = 0;
-    internal float currentSpeed = 0;
+    public GameObject[] units;
+    internal Rigidbody[] rbs = new Rigidbody[4];
+    internal float[] rotationSpeed = new float[4];
+    internal float[] currentSpeed = new float[4];
+    internal bool[] doShoot = new bool[4];
     internal bool dead = false;
 
     public float moveSpeed = 1.0f;
     public float rotationMod = 90.0f;
-    [Space]
-    //public float minDamageRange;
-    //public float damageRangeStep;
     [Space]
     public int scoreSinceLastCheck = 0;
     public int score = 0;
@@ -20,29 +29,35 @@ public class AI_Controller : MonoBehaviour
     public int maxHealth = 100;
     public int health;
 
-    private Vector3 startPos;
+    private Vector3[] startPos = new Vector3[4];
+    private Vector3[] startRot = new Vector3[4];
     private Pickup_Spawner spawner;
-    //private float distanceFromStart;
-    [SerializeField]
-    private float distanceFromClosestPickup;
-    [SerializeField]
-    private float prevDistanceFromClosestPickup;
+
     private GameObject closestPickup;
+    [SerializeField]
+    private float distanceToPickup;
     private GameObject prevClosestPickup;
+    [SerializeField]
+    private float prevDistanceToPickup;
 
     private int prevAction;
 
     private void Start()
     {
-        startPos = transform.position;
+
+        for (int i = 0; i < units.Length; i++)
+        {
+            startPos[i] = units[i].transform.position;
+            startRot[i] = units[i].transform.eulerAngles;
+            rbs[i] = units[i].GetComponent<Rigidbody>();
+        }
+
         spawner = FindObjectOfType<Pickup_Spawner>();
         Reset();
     }
 
     public void Act()
     {
-        //Debug.Log("health " + health);
-
         if (health <= 0)
         {
             dead = true;
@@ -52,15 +67,58 @@ public class AI_Controller : MonoBehaviour
             dead = false;
         }
 
-        if (rotationSpeed != 0)
+        for (int i = 0; i < units.Length; i++)
         {
-            transform.eulerAngles += new Vector3 (0, rotationSpeed * rotationMod, 0);
+            if (rotationSpeed[i] != 0)
+            {
+                units[i].transform.eulerAngles += new Vector3(0, rotationSpeed[i] * rotationMod, 0);
+            }
+
+            if (currentSpeed[i] != 0)
+            {
+                rbs[i].AddForce(units[i].transform.forward * currentSpeed[i] * moveSpeed);
+            }
+
+            if (doShoot[i])
+            {
+                Shoot(i);
+                doShoot[i] = false;
+            }
         }
 
-        if (currentSpeed != 0)
-        {
-            transform.position += transform.forward * currentSpeed * moveSpeed;
-        }
+        
+
+        #region commented out code
+        //if (closestPickup == null)
+        //{
+        //    closestPickup = spawner.pickups[0];
+        //}
+
+        //prevClosestPickup = closestPickup;
+        //prevDistanceToPickup = distanceToPickup;
+        //distanceToPickup = (int)Vector3.Distance(closestPickup.transform.position, transform.position);
+
+        //for (int i = 0; i < spawner.pickups.Count; i++)
+        //{
+        //    if (Vector3.Distance(closestPickup.transform.position, transform.position) < distanceToPickup)
+        //    {
+        //        closestPickup = spawner.pickups[i];
+        //        distanceToPickup = (int)Vector3.Distance(closestPickup.transform.position, transform.position);
+        //    }
+        //}
+
+        //if (closestPickup != null && prevClosestPickup != null)
+        //{
+        //    if (distanceToPickup < prevDistanceToPickup)
+        //    {
+        //        scoreSinceLastCheck += 0;
+        //    }
+        //    if (distanceToPickup > prevDistanceToPickup)
+        //    {
+        //        scoreSinceLastCheck -= 0;
+        //    }
+        //}
+        #endregion
     }
 
     public int CheckScore()
@@ -75,46 +133,26 @@ public class AI_Controller : MonoBehaviour
     public void Reset()
     {
         health = maxHealth;
-        transform.position = startPos;
-        transform.eulerAngles = Vector3.zero;
+        for (int i = 0; i < units.Length; i++)
+        {
+            units[i].transform.position = startPos[i];
+            units[i].transform.eulerAngles = startRot[i];
+
+            rotationSpeed[i] = 0;
+            currentSpeed[i] = 0;
+        }
+        
         score = 0;
         scoreSinceLastCheck = 0;
         dead = false;
-        rotationSpeed = 0;
-        currentSpeed = 0;
-        distanceFromClosestPickup = 999;
-        prevDistanceFromClosestPickup = 999;
+        
         closestPickup = null;
         prevClosestPickup = null;
     }
 
-    public void Decay(int action)
+    public void Decay()
     {
-        prevDistanceFromClosestPickup = distanceFromClosestPickup;
-        distanceFromClosestPickup = 999;
-
-        prevClosestPickup = closestPickup;
-
-        foreach (GameObject obj in spawner.pickups)
-        {
-            if (distanceFromClosestPickup >= Vector3.Distance(transform.position, obj.transform.position))
-            {
-                distanceFromClosestPickup = Vector3.Distance(transform.position, obj.transform.position);
-                closestPickup = obj;
-            }
-        }
-
         TakeDamage(1);
-
-        //if ((int)distanceFromClosestPickup <= 5 && action == 1 && distanceFromClosestPickup < prevDistanceFromClosestPickup)
-        //{
-        //    scoreSinceLastCheck += 6 - (int)distanceFromClosestPickup;
-        //}
-
-        //if (prevAction != 1 && action == prevAction)
-        //{
-        //    scoreSinceLastCheck -= 1;
-        //}
     }
 
     public void TakeDamage(int damage)
@@ -122,17 +160,77 @@ public class AI_Controller : MonoBehaviour
         health -= damage;
     }
 
+    public void Shoot(int unitNum)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(units[unitNum].transform.position, units[unitNum].transform.forward, out hit))
+        {
+            if (hit.collider.tag == "Pickup")
+            {
+                scoreSinceLastCheck += 20;
+                health = maxHealth;
+                spawner.DestroyPickup(hit.collider.gameObject);
+                //Debug.Log("hit " + unitNum);
+
+            }
+        }
+        else
+        {
+            scoreSinceLastCheck -= 5;
+            Debug.Log("miss " + unitNum);
+        }
+
+        if (spawner.pickups.Count == 0)
+        {
+            scoreSinceLastCheck += 100;
+            health = 0;
+        }
+    }
+
+    public void SetAction(int unitNum, int action)
+    {
+        //Debug.Log(unitNum + " does " + (Action)action);
+
+        currentSpeed[unitNum] = 0;
+        rotationSpeed[unitNum] = 0;
+        doShoot[unitNum] = false;
+
+        switch ((Action)action)
+        {
+            case Action.SHOOT:
+                doShoot[unitNum] = true;
+                break;
+            case Action.STEP:
+                currentSpeed[unitNum] = 1;
+                break;
+            case Action.LEFT_TURN:
+                rotationSpeed[unitNum] = -1;
+                break;
+            case Action.RIGHT_TURN:
+                rotationSpeed[unitNum] = 1;
+                break;
+            default:
+                break;
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Pickup")
-        {
-            Debug.Log("gained score");
-            scoreSinceLastCheck += 10 + health;
-            //health += maxHealth;
-            health = 0;
-            distanceFromClosestPickup = 999;
-            prevDistanceFromClosestPickup = 999;
-            spawner.DestroyPickup(other.gameObject);
-        }
+        //if (other.tag == "Pickup")
+        //{
+        //    prevDistanceToPickup = 999;
+        //    distanceToPickup = 999;
+
+        //    scoreSinceLastCheck -= 10;
+        //    //scoreSinceLastCheck += 10 + health;
+        //    //health += maxHealth;
+        //    spawner.DestroyPickup(other.gameObject);
+
+        //    if (spawner.pickups.Count == 0)
+        //    {
+        //        //scoreSinceLastCheck += 50;
+        //        health = 0;
+        //    }
+        //}
     }
 }
