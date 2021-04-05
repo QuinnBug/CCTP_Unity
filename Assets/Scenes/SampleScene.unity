@@ -350,7 +350,7 @@ MonoBehaviour:
   - {fileID: 232366630}
   - {fileID: 1920567370}
   - {fileID: 1479083927}
-  moveSpeed: 100
+  moveSpeed: 1000
   rotationMod: 45
   scoreSinceLastCheck: 0
   score: 0
@@ -376,7 +376,7 @@ MonoBehaviour:
   - {fileID: 1102432969}
   - {fileID: 540899959}
   - {fileID: 1304520541}
-  updateRate: 0.4
+  updateRate: 1
 --- !u!114 &180489030
 MonoBehaviour:
   m_ObjectHideFlags: 0
