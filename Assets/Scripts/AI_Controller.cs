@@ -162,16 +162,21 @@ public class AI_Controller : MonoBehaviour
 
     public void Shoot(int unitNum)
     {
+        Debug.Log("shoot " + unitNum);
+
         RaycastHit hit;
-        if (Physics.Raycast(units[unitNum].transform.position, units[unitNum].transform.forward, out hit))
+        if (Physics.Raycast(units[unitNum].transform.position, units[unitNum].transform.forward, out hit, 100, 1 << LayerMask.NameToLayer("Raycastable")))
         {
-            if (hit.collider.tag == "Pickup")
+            if (spawner.pickups.Contains(hit.collider.gameObject))
             {
+                Debug.Log("score " + unitNum);
                 scoreSinceLastCheck += 20;
                 health = maxHealth;
                 spawner.DestroyPickup(hit.collider.gameObject);
-                //Debug.Log("hit " + unitNum);
-
+            }
+            else
+            {
+                Debug.Log("hit something wrong " + unitNum);
             }
         }
         else
