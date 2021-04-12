@@ -171,7 +171,7 @@ public class AI_Controller : MonoBehaviour
             {
                 Debug.Log("score " + unitNum);
                 scoreSinceLastCheck += 20;
-                health = maxHealth;
+                //health = maxHealth;
                 spawner.DestroyPickup(hit.collider.gameObject);
             }
             else
