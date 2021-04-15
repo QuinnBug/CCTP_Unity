@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,11 +15,15 @@ public enum Action
 public class AI_Controller : MonoBehaviour
 {
     public GameObject[] units;
+    public List<int>[] trackers = new List<int>[2];
+    public GameObject[] trackerObjects = new GameObject[2];
     internal Rigidbody[] rbs = new Rigidbody[4];
     internal float[] rotationSpeed = new float[4];
     internal float[] currentSpeed = new float[4];
     internal bool[] doShoot = new bool[4];
     internal bool dead = false;
+
+    int shootCount = 0;
 
     public float moveSpeed = 1.0f;
     public float rotationMod = 90.0f;
@@ -44,12 +49,16 @@ public class AI_Controller : MonoBehaviour
 
     private void Start()
     {
-
         for (int i = 0; i < units.Length; i++)
         {
             startPos[i] = units[i].transform.position;
             startRot[i] = units[i].transform.eulerAngles;
             rbs[i] = units[i].GetComponent<Rigidbody>();
+        }
+
+        for (int i = 0; i < trackers.Length; i++)
+        {
+            trackers[i] = new List<int>();
         }
 
         spawner = FindObjectOfType<Pickup_Spawner>();
@@ -61,6 +70,10 @@ public class AI_Controller : MonoBehaviour
         if (health <= 0)
         {
             dead = true;
+            if (shootCount == 0)
+            {
+                scoreSinceLastCheck -= 100;
+            }
         }
         else
         {
@@ -86,7 +99,7 @@ public class AI_Controller : MonoBehaviour
             }
         }
 
-        
+        CheckTrackers();
 
         #region commented out code
         //if (closestPickup == null)
@@ -141,13 +154,17 @@ public class AI_Controller : MonoBehaviour
             rotationSpeed[i] = 0;
             currentSpeed[i] = 0;
         }
-        
+
+        CheckTrackers();
+
         score = 0;
         scoreSinceLastCheck = 0;
         dead = false;
         
         closestPickup = null;
         prevClosestPickup = null;
+
+        shootCount = 0;
     }
 
     public void Decay()
@@ -160,8 +177,57 @@ public class AI_Controller : MonoBehaviour
         health -= damage;
     }
 
+    private void CheckTrackers()
+    {
+        for (int i = 0; i < trackers.Length; i++)
+        {
+            if (trackers[i].Count >= 2)
+            {
+                scoreSinceLastCheck += 50;
+            }
+
+            trackers[i].Clear();
+        }
+    }
+
     public void Shoot(int unitNum)
     {
+        Debug.Log("shoot " + unitNum);
+
+        shootCount++;
+
+        bool x = false;
+
+        RaycastHit hit;
+        if (Physics.Raycast(units[unitNum].transform.position, units[unitNum].transform.forward, out hit, 100, 1 << LayerMask.NameToLayer("Raycastable")))
+        {
+            for (int i = 0; i < trackers.Length; i++)
+            {
+                if (hit.collider.gameObject == trackerObjects[i])
+                {
+                    if (trackers[i].Contains(unitNum) == false)
+                    {
+                        trackers[i].Add(unitNum);
+                    }
+
+                    x = true;
+                    break;
+                }
+            }
+
+            if (x == false)
+            {
+                scoreSinceLastCheck -= 5;
+            }
+
+        }
+        else
+        {
+            scoreSinceLastCheck -= 10;
+        }
+
+        #region pickup shoot code
+        /*
         Debug.Log("shoot " + unitNum);
 
         RaycastHit hit;
@@ -190,6 +256,8 @@ public class AI_Controller : MonoBehaviour
             scoreSinceLastCheck += 100;
             health = 0;
         }
+        */
+        #endregion
     }
 
     public void SetAction(int unitNum, int action)
@@ -206,7 +274,7 @@ public class AI_Controller : MonoBehaviour
                 doShoot[unitNum] = true;
                 break;
             case Action.STEP:
-                currentSpeed[unitNum] = 1;
+                //currentSpeed[unitNum] = 1;
                 break;
             case Action.LEFT_TURN:
                 rotationSpeed[unitNum] = -1;

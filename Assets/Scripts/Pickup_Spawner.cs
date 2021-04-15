@@ -17,23 +17,23 @@ public class Pickup_Spawner : MonoBehaviour
 
         Vector3 position = new Vector3(Random.Range(0, -5), 1, -5);
 
-        GameObject newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
-        pickups.Add(newObj);
+        //GameObject newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
+        //pickups.Add(newObj);
 
-        position = new Vector3(Random.Range(0, 5), 1, 5);
+        //position = new Vector3(Random.Range(0, 5), 1, 5);
 
-        newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
-        pickups.Add(newObj);
+        //newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
+        //pickups.Add(newObj);
 
-        position = new Vector3(-5, 1, Random.Range(0, 5));
+        //position = new Vector3(-5, 1, Random.Range(0, 5));
 
-        newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
-        pickups.Add(newObj);
+        //newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
+        //pickups.Add(newObj);
 
-        position = new Vector3(5, 1, Random.Range(0, -5));
+        //position = new Vector3(5, 1, Random.Range(0, -5));
 
-        newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
-        pickups.Add(newObj);
+        //newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
+        //pickups.Add(newObj);
 
         //for (int i = 0; i < pickupCount; i++)
         //{
