@@ -23,6 +23,8 @@ public class AI_Controller : MonoBehaviour
     internal bool[] doShoot = new bool[4];
     internal bool dead = false;
 
+    public Collider boundaries;
+
     int shootCount = 0;
 
     public float moveSpeed = 1.0f;
@@ -30,13 +32,15 @@ public class AI_Controller : MonoBehaviour
     [Space]
     public int scoreSinceLastCheck = 0;
     public int score = 0;
+    public int[] scores = new int[] { 0, 0, 0, 0 };
+    public int[] scoresSinceLastCheck = new int[] { 0, 0, 0, 0 };
     [Space]
     public int maxHealth = 100;
     public int health;
 
     private Vector3[] startPos = new Vector3[4];
     private Vector3[] startRot = new Vector3[4];
-    private Pickup_Spawner spawner;
+    internal Pickup_Spawner spawner;
 
     private GameObject closestPickup;
     [SerializeField]
@@ -88,15 +92,23 @@ public class AI_Controller : MonoBehaviour
             }
 
             if (currentSpeed[i] != 0)
-            {
-                rbs[i].AddForce(units[i].transform.forward * currentSpeed[i] * moveSpeed);
+            {                
+                if (boundaries.bounds.Contains(units[i].transform.position + units[i].transform.forward * currentSpeed[i] * moveSpeed))
+                {
+                    units[i].transform.position += units[i].transform.forward * currentSpeed[i] * moveSpeed;
+                }
+                else
+                {
+                    Debug.Log(i + " tried to leave the arena");
+                    scoresSinceLastCheck[i] += -5;
+                }
             }
 
-            if (doShoot[i])
-            {
-                Shoot(i);
-                doShoot[i] = false;
-            }
+            //if (doShoot[i])
+            //{
+            //    Shoot(i);
+            //    doShoot[i] = false;
+            //}
         }
 
         CheckTrackers();
@@ -134,11 +146,16 @@ public class AI_Controller : MonoBehaviour
         #endregion
     }
 
-    public int CheckScore()
+    public int[] CheckScore()
     {
-        int x = scoreSinceLastCheck;
-        score += scoreSinceLastCheck;
-        scoreSinceLastCheck = 0;
+        int[] x = new int[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            x[i] = scoresSinceLastCheck[i];
+            scores[i] += scoresSinceLastCheck[i];
+            scoresSinceLastCheck[i] = 0;
+        }
 
         return x;
     }
@@ -179,20 +196,45 @@ public class AI_Controller : MonoBehaviour
 
     private void CheckTrackers()
     {
-        for (int i = 0; i < trackers.Length; i++)
+        if (trackers[0].Count == 3)
         {
-            if (trackers[i].Count >= 2)
+            Debug.Log(trackers[0] + " " + trackers[1] + " " + trackers[2] + " are all scoring in the zone");
+            foreach (var item in trackers[0])
             {
-                scoreSinceLastCheck += 50;
+                scoresSinceLastCheck[item] += 150;
             }
-
-            trackers[i].Clear();
         }
+        else if (trackers[0].Count == 4)
+        {
+            Debug.Log("Everyone is here!");
+            foreach (var item in trackers[0])
+            {
+                scoresSinceLastCheck[item] -= 50;
+            }
+        }
+
+        //foreach (int item in trackers[0])
+        //{
+        //    scoresSinceLastCheck[item] += 50;
+        //}
+
+        //for (int i = 0; i < trackers.Length; i++)
+        //{
+        //    if (trackers[i].Count >= 2)
+        //    {
+        //        foreach (int item in trackers[i])
+        //        {
+        //            scoresSinceLastCheck[item] += 50;
+        //        }
+        //    }
+
+        //    trackers[i].Clear();
+        //}
     }
 
     public void Shoot(int unitNum)
     {
-        Debug.Log("shoot " + unitNum);
+        //Debug.Log("shoot " + unitNum);
 
         shootCount++;
 
@@ -217,13 +259,17 @@ public class AI_Controller : MonoBehaviour
 
             if (x == false)
             {
-                scoreSinceLastCheck -= 5;
+                scoresSinceLastCheck[unitNum] -= 5;
+            }
+            else
+            {
+                scoresSinceLastCheck[unitNum] += 5;
             }
 
         }
         else
         {
-            scoreSinceLastCheck -= 10;
+            scoresSinceLastCheck[unitNum] -= 10;
         }
 
         #region pickup shoot code
@@ -271,10 +317,10 @@ public class AI_Controller : MonoBehaviour
         switch ((Action)action)
         {
             case Action.SHOOT:
-                doShoot[unitNum] = true;
+                //doShoot[unitNum] = true;
                 break;
             case Action.STEP:
-                //currentSpeed[unitNum] = 1;
+                currentSpeed[unitNum] = 1;
                 break;
             case Action.LEFT_TURN:
                 rotationSpeed[unitNum] = -1;
@@ -288,6 +334,27 @@ public class AI_Controller : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
+    {
+
+        //if (other.tag == "Pickup")
+        //{
+        //    prevDistanceToPickup = 999;
+        //    distanceToPickup = 999;
+
+        //    scoreSinceLastCheck -= 10;
+        //    //scoreSinceLastCheck += 10 + health;
+        //    //health += maxHealth;
+        //    spawner.DestroyPickup(other.gameObject);
+
+        //    if (spawner.pickups.Count == 0)
+        //    {
+        //        //scoreSinceLastCheck += 50;
+        //        health = 0;
+        //    }
+        //}
+    }
+
+    private void OnTriggerExit(Collider other)
     {
         //if (other.tag == "Pickup")
         //{

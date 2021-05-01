@@ -57,16 +57,31 @@ public class CameraToPNG : MonoBehaviour
             //if (Input.GetKeyDown(KeyCode.Space))
             //{
             //    // use this to print out the output from the server - don't run on pure update, always have an extra requirement like a keypress
-            //    System.IO.File.WriteAllBytes(Application.dataPath + @"\outputs\" + filename + "_Py_" + count + ".png", stp.output);
+            //    System.IO.File.WriteAllBytes(Application.dataPath + @"\outputs\" + filename + "_Py_" + count + ".png", stp.output);https://mapgenie.io/tarkov/maps/customs
             //}
 
             if (stp.recievedData)
             {
+                int[] values = { stp.output[0], stp.output[8], stp.output[16], stp.output[24] };
+
+                //Debug.Log((Action)values[0] + " - " +  (Action)values[1] + " - " + (Action)values[2] + " - " + (Action)values[3]);
+
                 ai.Decay();
 
                 for (int i = 0; i < ai.units.Length; i++)
                 {
-                    ai.SetAction(i, stp.output[8 * i]);
+                    #region
+                    //if (value <= (i + 1) * 4 && value > i * 4)
+                    //{
+                    //    ai.SetAction(i, (value % 4));
+                    //    Debug.Log("unit " + i + " does " + (Action)(value % 4));
+                    //}
+                    //else
+                    //{
+                    //    ai.SetAction(i, -1);
+                    //}
+                    #endregion
+                    ai.SetAction(i, values[i]);
                 }
 
                 stp.recievedData = false;
@@ -83,7 +98,8 @@ public class CameraToPNG : MonoBehaviour
 
             if (timer > updateRate)
             {
-                int reward = ai.CheckScore();
+                int[] rewards = ai.CheckScore();
+
                 List<byte> dataOutput = new List<byte>();
 
                 foreach (Camera camera in cams)
@@ -91,7 +107,7 @@ public class CameraToPNG : MonoBehaviour
                     dataOutput.AddRange(GetPNGBytesFromCamera(camera));
                 }
 
-                stp.ExchangeData(dataOutput.ToArray(), reward, ai.dead);
+                stp.ExchangeData(dataOutput.ToArray(), rewards, ai.dead);
 
                 count++;
                 timer = 0;

@@ -41,7 +41,7 @@ public class Socket_to_py : MonoBehaviour
         if (connected)
         {
             byte[] bytes = new byte[1] { 0 };
-            ExchangeData(bytes, 0, false);
+            ExchangeData(bytes, new int[] {0, 0, 0, 0}, false);
         }
 
         skt.Close();
@@ -49,7 +49,7 @@ public class Socket_to_py : MonoBehaviour
         Destroy(this);
     }
 
-    public void ExchangeData(byte[] bytes, int reward, bool game_over)
+    public void ExchangeData(byte[] bytes, int[] rewards, bool game_over)
     {
         int stateInt = 0;
         if (game_over)
@@ -60,19 +60,22 @@ public class Socket_to_py : MonoBehaviour
 
         List<byte> byteList = new List<byte>();
         byteList.Add((byte)stateInt);
-        if (reward > 0)
+
+        foreach (int r in rewards)
         {
-            byteList.Add(0);
+            if (r >= 0)
+            {
+                byteList.Add(0);
+            }
+            else
+            {
+                byteList.Add(1);
+            }
+            byteList.Add((byte)Mathf.Abs(r));
         }
-        else
-        {
-            byteList.Add(1);
-        }
-        byteList.Add((byte)Mathf.Abs(reward));
+
         byteList.AddRange(bytes);
         byte[] data = byteList.ToArray();
-
-        //Debug.Log("data " + data[0] + " / " + data[1] + " / " + data[2] + " / ");
 
         NetworkStream stream = skt.GetStream();
         if (stream.DataAvailable == false)
@@ -95,10 +98,10 @@ public class Socket_to_py : MonoBehaviour
         //string debug = "";
         //for (int i = 0; i < data.Length; i++)
         //{
-        //    debug += data[i] + " - ";
+        //    debug += data[i] + " ";
         //}
         //Debug.Log(debug);
-        
+
 
         if (game_over)
         {
