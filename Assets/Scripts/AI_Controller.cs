@@ -198,7 +198,7 @@ public class AI_Controller : MonoBehaviour
     {
         if (trackers[0].Count == 3)
         {
-            Debug.Log(trackers[0] + " " + trackers[1] + " " + trackers[2] + " are all scoring in the zone");
+            Debug.Log(trackers[0][0] + " " + trackers[0][1] + " " + trackers[0][2] + " are all scoring in the zone");
             foreach (var item in trackers[0])
             {
                 scoresSinceLastCheck[item] += 150;
@@ -318,6 +318,7 @@ public class AI_Controller : MonoBehaviour
         {
             case Action.SHOOT:
                 //doShoot[unitNum] = true;
+                currentSpeed[unitNum] = -1;
                 break;
             case Action.STEP:
                 currentSpeed[unitNum] = 1;

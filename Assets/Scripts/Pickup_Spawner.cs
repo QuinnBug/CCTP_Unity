@@ -17,7 +17,7 @@ public class Pickup_Spawner : MonoBehaviour
 
         for (int i = 0; i < pickupCount; i++)
         {
-            Vector3 position = new Vector3(Random.Range(-8, 7), 0, Random.Range(-2, -10));
+            Vector3 position = new Vector3(Random.Range(-7, 6), 0, Random.Range(-2, -10));
 
             GameObject newObj = Instantiate(pickupPrefab, position, Quaternion.identity);
             pickups.Add(newObj);
