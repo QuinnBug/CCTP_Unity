@@ -74,10 +74,6 @@ public class AI_Controller : MonoBehaviour
         if (health <= 0)
         {
             dead = true;
-            if (shootCount == 0)
-            {
-                scoreSinceLastCheck -= 100;
-            }
         }
         else
         {
@@ -96,11 +92,12 @@ public class AI_Controller : MonoBehaviour
                 if (boundaries.bounds.Contains(units[i].transform.position + units[i].transform.forward * currentSpeed[i] * moveSpeed))
                 {
                     units[i].transform.position += units[i].transform.forward * currentSpeed[i] * moveSpeed;
+                    scoresSinceLastCheck[i] += 5;
                 }
                 else
                 {
                     Debug.Log(i + " tried to leave the arena");
-                    scoresSinceLastCheck[i] += -5;
+                    scoresSinceLastCheck[i] += -1;
                 }
             }
 
@@ -109,41 +106,38 @@ public class AI_Controller : MonoBehaviour
             //    Shoot(i);
             //    doShoot[i] = false;
             //}
+
+            //if (closestPickup == null)
+            //{
+            //    closestPickup = spawner.pickups[0];
+            //}
+
+            //prevClosestPickup = closestPickup;
+            //prevDistanceToPickup = distanceToPickup;
+            //distanceToPickup = (int)Vector3.Distance(closestPickup.transform.position, transform.position);
+
+            //for (int j = 0; j < spawner.pickups.Count; j++)
+            //{
+            //    if (Vector3.Distance(closestPickup.transform.position, transform.position) < distanceToPickup)
+            //    {
+            //        closestPickup = spawner.pickups[j];
+            //        distanceToPickup = (int)Vector3.Distance(closestPickup.transform.position, transform.position);
+            //    }
+            //}
+
+            //if (closestPickup != null && prevClosestPickup != null)
+            //{
+            //    if (distanceToPickup < prevDistanceToPickup)
+            //    {
+            //        scoresSinceLastCheck[i] += 20;
+            //    }
+            //    if (distanceToPickup > prevDistanceToPickup)
+            //    {
+            //        scoreSinceLastCheck -= 5;
+            //    }
+            //}
         }
-
         CheckTrackers();
-
-        #region commented out code
-        //if (closestPickup == null)
-        //{
-        //    closestPickup = spawner.pickups[0];
-        //}
-
-        //prevClosestPickup = closestPickup;
-        //prevDistanceToPickup = distanceToPickup;
-        //distanceToPickup = (int)Vector3.Distance(closestPickup.transform.position, transform.position);
-
-        //for (int i = 0; i < spawner.pickups.Count; i++)
-        //{
-        //    if (Vector3.Distance(closestPickup.transform.position, transform.position) < distanceToPickup)
-        //    {
-        //        closestPickup = spawner.pickups[i];
-        //        distanceToPickup = (int)Vector3.Distance(closestPickup.transform.position, transform.position);
-        //    }
-        //}
-
-        //if (closestPickup != null && prevClosestPickup != null)
-        //{
-        //    if (distanceToPickup < prevDistanceToPickup)
-        //    {
-        //        scoreSinceLastCheck += 0;
-        //    }
-        //    if (distanceToPickup > prevDistanceToPickup)
-        //    {
-        //        scoreSinceLastCheck -= 0;
-        //    }
-        //}
-        #endregion
     }
 
     public int[] CheckScore()
@@ -318,7 +312,7 @@ public class AI_Controller : MonoBehaviour
         {
             case Action.SHOOT:
                 //doShoot[unitNum] = true;
-                currentSpeed[unitNum] = -1;
+                //currentSpeed[unitNum] = -1;
                 break;
             case Action.STEP:
                 currentSpeed[unitNum] = 1;

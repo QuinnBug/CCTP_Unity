@@ -3058,7 +3058,7 @@ MonoBehaviour:
   - {fileID: 1964055840}
   - {fileID: 577272641}
   - {fileID: 523524695}
-  updateRate: 0.5
+  updateRate: 2
 --- !u!114 &180489030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8090,7 +8090,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 1, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0.11076006, g: 0.17131703, b: 0.1792453, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -23955,7 +23955,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 1, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0.11076006, g: 0.17131703, b: 0.1792453, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

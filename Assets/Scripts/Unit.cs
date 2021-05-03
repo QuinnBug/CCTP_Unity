@@ -23,7 +23,7 @@ public class Unit : MonoBehaviour
         if (other.tag == "Pickup")
         {
             Debug.Log(unitNum + " got a pickup");
-            controller.scoresSinceLastCheck[unitNum] += 10;
+            controller.scoresSinceLastCheck[unitNum] += 200;
             controller.spawner.DestroyPickup(other.gameObject);
         }
     }
