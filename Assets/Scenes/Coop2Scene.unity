@@ -3058,7 +3058,7 @@ MonoBehaviour:
   - {fileID: 1964055840}
   - {fileID: 577272641}
   - {fileID: 523524695}
-  updateRate: 2
+  updateRate: 0.25
 --- !u!114 &180489030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3071,7 +3071,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6eedfde79b44bf43aedd08465aa38ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupCount: 10
+  pickupCount: 0
   pickupPrefab: {fileID: 4505881888209826733, guid: fb35f47f1cbf1e44a92ace7a850f73b9,
     type: 3}
   spawnRange: 10
@@ -11060,7 +11060,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 733461539}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: 0.0161, z: 6}
+  m_LocalPosition: {x: -0.5, y: 0.0161, z: -5}
   m_LocalScale: {x: 16, y: 0.27296478, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
